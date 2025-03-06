@@ -8,7 +8,7 @@ type TDirection = {
     href: string,
     subMenu?: TSubMenu[]
 }
-export const direction: TDirection[] = [
+export const navDirection: TDirection[] = [
     {
         title: 'Trang chủ',
         href: '/'

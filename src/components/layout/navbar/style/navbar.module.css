@@ -1,5 +1,12 @@
-.toolBar{
-    color: 'white';
+.toolBar {
+    color: white;
     display: flex;
     justify-content: space-between;
+}
+
+.direction {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    text-align: center;
 }
