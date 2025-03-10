@@ -31,11 +31,7 @@ const Navbar = memo((): JSX.Element => {
   const renderDirectionLinks = useCallback(
     () =>
       navDirection.map((dir, index) => (
-        <Link
-          key={index}
-          to={dir.href}
-          className={styles.direction}
-        >
+        <Link key={index} to={dir.href} className={styles.link}>
           {dir.title}
         </Link>
       )),
@@ -44,43 +40,31 @@ const Navbar = memo((): JSX.Element => {
 
   return (
     <>
-      <AppBar
-        position="absolute"
-        sx={{
-          backgroundColor: "rgba(0, 102, 66, 0.7)",
-          backdropFilter: "blur(16px)",
-          width: "100%",
-          top: 0,
-          zIndex: 10,
-          padding: "16px 0",
-        }}
-      >
-        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+      <AppBar className={styles["app-bar"]} style={{ backgroundColor: "#006642" }}>
+        <Toolbar className={styles.toolbar}>
           {/* Menu Icon cho Mobile */}
-          <Box sx={{ display: { xs: "block", md: "none" } }}>
+          <Box className={styles["menu-icon-box"]}>
             <IconButton edge="start" color="inherit" onClick={handleOpen}>
               <MenuIcon />
             </IconButton>
           </Box>
 
           {/* Hotline */}
-          <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}>
-            <PhoneIcon sx={{ marginRight: 1 }} />
-            <Link
-              to={SHOP_PHONE_HREF}
-              style={{ color: "white", textDecoration: "none" }}
-            >
-              {SHOP_PHONE}</Link>
+          <Box className={styles.hotline}>
+            <PhoneIcon className={styles["hotline-icon"]} />
+            <Link to={SHOP_PHONE_HREF} className={styles.link}>
+              {SHOP_PHONE}
+            </Link>
           </Box>
 
           {/* Menu Links */}
-          <Stack direction="row" spacing={3} sx={{ display: { xs: "none", md: "flex" } }}>
+          <Stack direction="row" spacing={3} className={styles["menu-links"]}>
             {renderDirectionLinks()}
           </Stack>
 
           {/* Icons */}
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Search sx={{ display: { xs: "none", sm: "block" } }}>
+          <Box className={styles["icon-box"]}>
+            <Search className={styles["search-box"]}>
               <SearchIconWrapper>
                 <SearchIcon />
               </SearchIconWrapper>
@@ -98,11 +82,11 @@ const Navbar = memo((): JSX.Element => {
       </AppBar>
 
       <Drawer anchor="left" open={open} onClose={handleClose}>
-        <List sx={{ width: 250 }}>
+        <List className={styles["drawer-list"]}>
           {navDirection.map((dir, index) => (
             <ListItem key={index} disablePadding>
               <ListItemButton onClick={handleClose}>
-                <Link to={dir.href} style={{ color: "black", textDecoration: "none", width: "100%" }}>
+                <Link to={dir.href} className={styles["drawer-link"]}>
                   <ListItemText primary={dir.title} />
                 </Link>
               </ListItemButton>
