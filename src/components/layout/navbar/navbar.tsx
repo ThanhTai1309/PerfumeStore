@@ -1,7 +1,6 @@
-import { JSX, useState, memo, useCallback } from "react";
+import { useState, memo, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
-  AppBar,
   IconButton,
   Stack,
   Toolbar,
@@ -10,28 +9,41 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemButton
+  ListItemButton,
+  useTheme,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import PhoneIcon from "@mui/icons-material/Phone";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { styled } from "@mui/material/styles";
 import { navDirection } from "./constants/direction";
 import { Search, SearchIconWrapper, StyledInputBase } from "./components";
-import { DEFAULT_BOOLEAN_FALSE } from "../../../illumination";
 import { NAVBAR_SEARCH_PLACEHOLDER, SHOP_PHONE, SHOP_PHONE_HREF } from "./constants";
-import styles from "./style/navbar.module.css";
+import { AppBar } from "../..";
 
-const Navbar = memo((): JSX.Element => {
-  const [open, setOpen] = useState<boolean>(DEFAULT_BOOLEAN_FALSE);
+// Tạo component styled để dễ dàng responsive
+const MenuLinks = styled(Stack)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "row",
+  gap: theme.spacing(3),
+  [theme.breakpoints.down("md")]: {
+    display: "none",
+  },
+}));
+
+const Navbar = memo(() => {
+  const [open, setOpen] = useState(false);
+  const theme = useTheme();
 
   const handleOpen = useCallback(() => setOpen(true), []);
   const handleClose = useCallback(() => setOpen(false), []);
 
-  const renderDirectionLinks = useCallback(
+  // Memoized menu links để tránh re-render
+  const directionLinks = useMemo(
     () =>
       navDirection.map((dir, index) => (
-        <Link key={index} to={dir.href} className={styles.link}>
+        <Link key={index} to={dir.href} style={{ textDecoration: "none", color: "inherit" }}>
           {dir.title}
         </Link>
       )),
@@ -40,40 +52,37 @@ const Navbar = memo((): JSX.Element => {
 
   return (
     <>
-      <AppBar className={styles["app-bar"]} style={{ backgroundColor: "#006642" }}>
-        <Toolbar className={styles.toolbar}>
-          {/* Menu Icon cho Mobile */}
-          <Box className={styles["menu-icon-box"]}>
+      <AppBar sx={{ bgcolor: "rgba(0, 102, 66, 0.5)", backdropFilter: "blur(16px)" }}>
+        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+          {/* Nút mở menu drawer trên mobile */}
+          <Box sx={{ display: { xs: "block", md: "none" } }}>
             <IconButton edge="start" color="inherit" onClick={handleOpen}>
               <MenuIcon />
             </IconButton>
           </Box>
 
           {/* Hotline */}
-          <Box className={styles.hotline}>
-            <PhoneIcon className={styles["hotline-icon"]} />
-            <Link to={SHOP_PHONE_HREF} className={styles.link}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <PhoneIcon />
+            <Link to={SHOP_PHONE_HREF} style={{ textDecoration: "none", color: "inherit" }}>
               {SHOP_PHONE}
             </Link>
           </Box>
 
-          {/* Menu Links */}
-          <Stack direction="row" spacing={3} className={styles["menu-links"]}>
-            {renderDirectionLinks()}
-          </Stack>
+          {/* Menu Links - chỉ hiển thị trên màn hình lớn */}
+          <MenuLinks>{directionLinks}</MenuLinks>
 
           {/* Icons */}
-          <Box className={styles["icon-box"]}>
-            <Search className={styles["search-box"]}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            {/* Ô tìm kiếm */}
+            <Search sx={{ display: { xs: "none", md: "flex" } }}>
               <SearchIconWrapper>
                 <SearchIcon />
               </SearchIconWrapper>
-              <StyledInputBase
-                placeholder={NAVBAR_SEARCH_PLACEHOLDER}
-                inputProps={{ "aria-label": "search" }}
-              />
+              <StyledInputBase placeholder={NAVBAR_SEARCH_PLACEHOLDER} inputProps={{ "aria-label": "search" }} />
             </Search>
 
+            {/* Giỏ hàng */}
             <IconButton color="inherit">
               <ShoppingCartIcon />
             </IconButton>
@@ -81,12 +90,13 @@ const Navbar = memo((): JSX.Element => {
         </Toolbar>
       </AppBar>
 
+      {/* Menu Drawer cho mobile */}
       <Drawer anchor="left" open={open} onClose={handleClose}>
-        <List className={styles["drawer-list"]}>
+        <List sx={{ width: 250 }}>
           {navDirection.map((dir, index) => (
             <ListItem key={index} disablePadding>
               <ListItemButton onClick={handleClose}>
-                <Link to={dir.href} className={styles["drawer-link"]}>
+                <Link to={dir.href} style={{ textDecoration: "none", color: "inherit", width: "100%" }}>
                   <ListItemText primary={dir.title} />
                 </Link>
               </ListItemButton>
@@ -97,5 +107,7 @@ const Navbar = memo((): JSX.Element => {
     </>
   );
 });
+
+Navbar.displayName = "Navbar";
 
 export default Navbar;
